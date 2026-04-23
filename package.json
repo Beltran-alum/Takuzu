@@ -1,0 +1,21 @@
+{
+  "name": "takuzu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Beltran-alum/Takuzu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Beltran-alum/Takuzu/issues"
+  },
+  "homepage": "https://github.com/Beltran-alum/Takuzu#readme"
+}
