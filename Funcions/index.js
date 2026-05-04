@@ -1,7 +1,10 @@
 const prompt = require("prompt-sync")({ sigint: true });
 
-const { mostrarMenu } = require("./Menu.js");
+const { mostrarMenu, leerInteraccio } = require("./Menu.js");
+const { instruccions } = require("./instruccions");
 
 module.exports = {
-    mostrarMenu
+    mostrarMenu,
+    leerInteraccio,
+    instruccions
 };

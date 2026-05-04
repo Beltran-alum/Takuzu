@@ -1,64 +1,56 @@
 const prompt = require("prompt-sync")({ sigint: true });
-
 const {
-    mostrarMenu
+    mostrarMenu,
+    leerInteraccio,
+    instruccions
 } = require("./Funcions");
-
 
 mostrarMenu()
 
 let salir = false;
 do {
-    console.clear();
-    console.log("Nom del Grup TUSMUERTOS")
+
+
+    let interact = leerInteraccio(4); // Elegir acción (1-4)
 
     switch (interact) {
 
-        case 1: // Crear nuevo personaje
-            console.clear();
-            console.log("\nCreando un nuevo personaje...");
+        case 1: // Instruccions
 
-            personajeActual = CrearPers(personajeActual); // reemplaza el actual
-            resetearEstadisticas(personajeActual);        // reiniciar estadísticas
             console.clear();
 
+            instruccions();
 
-
-
-            console.log("Personaje creado:", personajeActual.Nom);
-            prompt("\nPresiona cualquier tecla para continuar...");
             break;
 
 
 
 
 
-        case 2: // Ver estadísticas
-            console.clear();
-            verEstadisticas(personajeActual);
+        case 2: // Taulers
 
-            prompt("\nPresiona cualquier tecla para continuar...");
+            console.clear();
+
             break;
 
 
 
 
-        case 3: // Luchar
-            console.clear();
-            luchar(personajeActual); // genera enemigo internamente
+        case 3: // Jugar
 
-            prompt("\nPresiona cualquier tecla para continuar...");
+            console.clear();
+
             break;
 
 
 
 
-        case 4: // Salir
+        case 4: // Sortir
+
             console.log("\nSaliendo del juego...");
             salir = true;
+
             break;
-
-
 
 
 

@@ -5,8 +5,20 @@ function mostrarMenu() {
     console.log("Pulsa espai per a continuar...")
     prompt()
 
-    console.log("1. Instruccions del Joc")
-    console.log("2. Instruccions del Joc")
+    console.log("1. Instruccions")
+    console.log("2. Veure taulers")
+    console.log("3. Jugar")
+    console.log("4. Sortir")
 }
 
-module.exports = { mostrarMenu };
+function leerInteraccio(max) {
+    let Interaccio;
+    do {
+        Interaccio = parseInt(prompt("> "));
+    } while (isNaN(Interaccio) || Interaccio < 1 || Interaccio > max);
+
+    return Interaccio;
+}
+
+
+module.exports = { mostrarMenu, leerInteraccio };
