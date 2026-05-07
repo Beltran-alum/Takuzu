@@ -1,0 +1,19 @@
+const size = localStorage.getItem("size");
+const boardIndex = localStorage.getItem("board");
+
+let board;
+
+if (size === "petit") {
+    if (boardIndex == 0) board = PETIT_1;
+    else board = PETIT_2;
+}
+
+if (size === "mitja") {
+    if (boardIndex == 0) board = MITJA_1;
+    else board = MITJA_2;
+}
+
+if (size === "gran") {
+    if (boardIndex == 0) board = GRAN_1;
+    else board = GRAN_2;
+}
