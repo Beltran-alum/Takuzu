@@ -4,28 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Takuzu</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
+
     <header>
-        <h1 id="titulos"> Taulers disponibles de nivell mitja</h1>
+        <h1>Taulers disponibles de nivell mitja</h1>
     </header>
 
+    <div class="container">
 
-    <nav>
-        <ul class="navegador">
-            <li id="mitja"><a href="jugar.html">Mitja 1</a></li>
-            <li id="mitja2"><a href="jugar.html">Mitja 2</a></li>
-            <br>
-            <li><a href="benvinguda.html">Sortir</a></li>
-        </ul>
-    </nav>
+        <div id="mitja" class="preview"></div>
 
-    <script src="../eleccion.js"></script>
+        <div id="mitja2" class="preview"></div>
 
+    </div>
+
+    <a href="benvinguda.html">Sortir</a>
+
+    <script src="../js/taulells.js"></script>
+    <script src="../js/eleccion.js"></script>
 
     <footer class="footer">
         <p>&copy; 2026 Takuzu — Marc Beltrán & Iker Moreno</p>
     </footer>
 
 </body>
+</html>

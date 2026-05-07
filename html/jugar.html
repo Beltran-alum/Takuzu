@@ -1,19 +1,22 @@
-const size = localStorage.getItem("size");
-const boardIndex = localStorage.getItem("board");
+<!DOCTYPE html>
+<html lang="es">
 
-let board;
+<head>
+    <meta charset="UTF-8">
+    <title>Takuzu</title>
 
-if (size === "petit") {
-    if (boardIndex == 0) board = PETIT_1;
-    else board = PETIT_2;
-}
+    <link rel="stylesheet" href="../css/style.css">
+</head>
 
-if (size === "mitja") {
-    if (boardIndex == 0) board = MITJA_1;
-    else board = MITJA_2;
-}
+<body>
 
-if (size === "gran") {
-    if (boardIndex == 0) board = GRAN_1;
-    else board = GRAN_2;
-}
+    <h2 id="info"></h2>
+
+    <div id="board"></div>
+
+    <script src="../js/taulells.js"></script>
+    <script src="../js/joc.js"></script>
+
+</body>
+
+</html>
