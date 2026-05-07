@@ -1,5 +1,5 @@
 // ==========================
-// 1. RECUPERAR DATOS
+// 1. VARIABLES GLOBALES
 // ==========================
 
 const size = localStorage.getItem("size");
@@ -7,6 +7,9 @@ const boardIndex = localStorage.getItem("board");
 
 let board;
 let fixed = [];
+let errorCells = [];
+let errorMessage = "";
+let errorBox = null;
 
 
 // ==========================
@@ -15,29 +18,26 @@ let fixed = [];
 
 if (size === "petit") {
     board = (boardIndex === "0") ? PETIT_1 : PETIT_2;
-}
-
-if (size === "mitja") {
+} else if (size === "mitja") {
     board = (boardIndex === "0") ? MITJA_1 : MITJA_2;
-}
-
-if (size === "gran") {
+} else {
     board = (boardIndex === "0") ? GRAN_1 : GRAN_2;
 }
 
-// copia para no modificar original
+// copia segura
 board = JSON.parse(JSON.stringify(board));
 
 
 // ==========================
-// 3. MARCAR CASILLAS FIJAS
+// 3. CASILLAS FIJAS
 // ==========================
 
-fixed = JSON.parse(JSON.stringify(board));
+fixed = [];
 
-for (let i = 0; i < fixed.length; i++) {
-    for (let j = 0; j < fixed[i].length; j++) {
-        fixed[i][j] = (fixed[i][j] !== "");
+for (let i = 0; i < board.length; i++) {
+    fixed[i] = [];
+    for (let j = 0; j < board[i].length; j++) {
+        fixed[i][j] = board[i][j] !== "";
     }
 }
 
@@ -47,58 +47,82 @@ for (let i = 0; i < fixed.length; i++) {
 // ==========================
 
 function isBoardFull() {
-
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
-            if (board[i][j] === "") {
-                return false;
-            }
+            if (board[i][j] === "") return false;
         }
     }
-
     return true;
 }
 
 
 // ==========================
-// 5. VICTORIA (BÁSICA CORREGIDA)
+// 5. CHECK WIN
 // ==========================
 
 function checkWin() {
 
+    errorMessage = "";
+    errorCells = [];
+
     const n = board.length;
     const half = n / 2;
 
-    // 1. No vacíos
+    // 1. incompleto
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            if (board[i][j] === "") return false;
+            if (board[i][j] === "") {
+                errorMessage = "❌ El tablero está incompleto";
+                return false;
+            }
         }
     }
 
-    // 2. No 3 seguidos en filas
+    // ==========================
+    // 2. números seguidos en fila
+    // ==========================
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n - 2; j++) {
 
-            if (board[i][j] === board[i][j+1] &&
-                board[i][j] === board[i][j+2]) {
+            if (
+                board[i][j] === board[i][j + 1] &&
+                board[i][j] === board[i][j + 2]
+            ) {
+                errorMessage = "❌ Hay números seguidos en una fila";
+
+                for (let x = 0; x < n; x++) {
+                    errorCells.push([i, x]);
+                }
+
                 return false;
             }
         }
     }
 
-    // 3. No 3 seguidos en columnas
+    // ==========================
+    // 3. números seguidos en columna
+    // ==========================
     for (let j = 0; j < n; j++) {
         for (let i = 0; i < n - 2; i++) {
 
-            if (board[i][j] === board[i+1][j] &&
-                board[i][j] === board[i+2][j]) {
+            if (
+                board[i][j] === board[i + 1][j] &&
+                board[i][j] === board[i + 2][j]
+            ) {
+                errorMessage = "❌ Hay números seguidos en una columna";
+
+                for (let x = 0; x < n; x++) {
+                    errorCells.push([x, j]);
+                }
+
                 return false;
             }
         }
     }
 
-    // 4. Balance 0 y 1 por fila
+    // ==========================
+    // 4. balance filas
+    // ==========================
     for (let i = 0; i < n; i++) {
 
         let zeros = 0;
@@ -109,10 +133,20 @@ function checkWin() {
             if (board[i][j] === "1") ones++;
         }
 
-        if (zeros !== half || ones !== half) return false;
+        if (zeros !== half || ones !== half) {
+            errorMessage = "❌ fila mal balanceada";
+
+            for (let x = 0; x < n; x++) {
+                errorCells.push([i, x]);
+            }
+
+            return false;
+        }
     }
 
-    // 5. Balance 0 y 1 por columna
+    // ==========================
+    // 5. balance columnas
+    // ==========================
     for (let j = 0; j < n; j++) {
 
         let zeros = 0;
@@ -123,96 +157,64 @@ function checkWin() {
             if (board[i][j] === "1") ones++;
         }
 
-        if (zeros !== half || ones !== half) return false;
-    }
+        if (zeros !== half || ones !== half) {
+            errorMessage = "❌ columna mal balanceada";
 
-    // 6. filas duplicadas
-    for (let i = 0; i < n; i++) {
-        for (let k = i + 1; k < n; k++) {
-            if (JSON.stringify(board[i]) === JSON.stringify(board[k])) {
-                return false;
-            }
-        }
-    }
-
-    // 7. columnas duplicadas
-    for (let j = 0; j < n; j++) {
-
-        let col1 = [];
-        for (let i = 0; i < n; i++) {
-            col1.push(board[i][j]);
-        }
-
-        for (let j2 = j + 1; j2 < n; j2++) {
-
-            let col2 = [];
-            for (let i = 0; i < n; i++) {
-                col2.push(board[i][j2]);
+            for (let x = 0; x < n; x++) {
+                errorCells.push([x, j]);
             }
 
-            if (JSON.stringify(col1) === JSON.stringify(col2)) {
-                return false;
-            }
+            return false;
         }
     }
 
     return true;
 }
 
+
 // ==========================
-// 6. CLICK CASILLAS
+// 6. CLICK
 // ==========================
 
 function handleClick(e) {
 
-    const i = e.target.dataset.row;
-    const j = e.target.dataset.col;
+    const i = Number(e.target.dataset.row);
+    const j = Number(e.target.dataset.col);
 
-    // no tocar fijas
     if (fixed[i][j]) return;
 
-    // ciclo: vacío → 0 → 1 → vacío
-    if (board[i][j] === "") {
-        board[i][j] = "0";
-    }
-    else if (board[i][j] === "0") {
-        board[i][j] = "1";
-    }
-    else {
-        board[i][j] = "";
-    }
+    if (board[i][j] === "") board[i][j] = "0";
+    else if (board[i][j] === "0") board[i][j] = "1";
+    else board[i][j] = "";
 
     renderBoard();
 
-    // SOLO comprobar cuando esté lleno
-    if (isBoardFull()) {
+    const valid = checkWin();
 
-        if (checkWin()) {
+    if (errorBox) {
+        errorBox.textContent = isBoardFull() ? errorMessage : "";
+    }
 
-            alert("🎉 ¡HAS GANADO EL TAKUZU!");
-            window.location.href = "../html/benvinguda.html";
-
-        } else {
-
-            alert("❌ Tablero completo pero incorrecto");
-        }
+    if (isBoardFull() && valid) {
+        alert("🎉 ¡HAS GANADO!");
+        window.location.href = "../html/benvinguda.html";
     }
 }
 
 
 // ==========================
-// 7. RENDER TABLERO
+// 7. RENDER
 // ==========================
 
 function renderBoard() {
 
     const container = document.getElementById("board");
-
     container.innerHTML = "";
 
     container.style.display = "grid";
     container.style.gridTemplateColumns =
-        "repeat(" + board[0].length + ", 40px)";
+        `repeat(${board[0].length}, 44px)`;
+
     container.style.gap = "0";
 
     for (let i = 0; i < board.length; i++) {
@@ -221,21 +223,25 @@ function renderBoard() {
             const div = document.createElement("div");
             div.classList.add("cell");
 
-            const cell = board[i][j];
-
-            div.textContent = (cell === "") ? "" : cell;
+            div.textContent = board[i][j] || "";
 
             div.dataset.row = i;
             div.dataset.col = j;
 
-            // casillas fijas visuales
             if (fixed[i][j]) {
-                div.style.fontWeight = "bold";
-                div.style.backgroundColor = "#ddd";
+                div.classList.add("fixed");
+            }
+
+            for (let k = 0; k < errorCells.length; k++) {
+
+                const [r, c] = errorCells[k];
+
+                if (r === i && c === j) {
+                    div.classList.add("error");
+                }
             }
 
             div.addEventListener("click", handleClick);
-
             container.appendChild(div);
         }
     }
@@ -248,11 +254,13 @@ function renderBoard() {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    errorBox = document.getElementById("error");
+
     const info = document.getElementById("info");
 
     if (info) {
         info.textContent =
-            "Estás jugando: " + size + " - tablero " + (parseInt(boardIndex) + 1);
+            `Estás jugando: ${size} - tablero ${parseInt(boardIndex) + 1}`;
     }
 
     renderBoard();
