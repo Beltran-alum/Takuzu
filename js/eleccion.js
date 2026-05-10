@@ -1,28 +1,37 @@
+/**
+ * Muestra una vista previa de un tablero dentro de un contenedor.
+ * @param {Array} board - Matriz con los valores del tablero.
+ * @param {string} containerId - ID del contenedor donde se dibuja.
+ */
 function renderPreview(board, containerId) {
 
     const container = document.getElementById(containerId);
 
+    // Si no existe el contenedor, salimos
     if (!container) return;
 
+    // Limpiamos el contenido anterior
     container.innerHTML = "";
 
+    // Configuramos el grid según el tamaño del tablero
+    const columnas = board[0].length;
     container.style.display = "grid";
-    container.style.gridTemplateColumns =
-        "repeat(" + board[0].length + ", 40px)";
+    container.style.gridTemplateColumns = `repeat(${columnas}, 40px)`;
     container.style.gap = "5px";
 
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
+    // Recorremos la matriz y creamos las celdas
+    for (let fila = 0; fila < board.length; fila++) {
+        for (let col = 0; col < board[fila].length; col++) {
 
-            const div = document.createElement("div");
-            div.classList.add("cell");
+            const celda = document.createElement("div");
+            celda.classList.add("cell");
 
-            const cell = board[i][j];
+            const valor = board[fila][col];
 
-            div.textContent =
-                (cell === null || cell === "") ? "" : cell;
+            // Si es null o cadena vacía, mostramos vacío
+            celda.textContent = (valor === null || valor === "") ? "" : valor;
 
-            container.appendChild(div);
+            container.appendChild(celda);
         }
     }
 }
@@ -47,6 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // FUNCIÓN AUXILIAR
     // =====================
 
+    /**
+     * Guarda la selección en localStorage y abre la página del juego.
+     */
     function goToGame(size, boardIndex) {
         localStorage.setItem("size", size);
         localStorage.setItem("board", boardIndex);
@@ -55,62 +67,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================
+    // ASIGNACIÓN DE EVENTOS
+    // =====================
+
+    function activarClick(idElemento, size, index) {
+        const elemento = document.getElementById(idElemento);
+
+        if (elemento) {
+            elemento.addEventListener("click", function () {
+                goToGame(size, index);
+            });
+        }
+    }
+
     // PETIT
-    // =====================
+    activarClick("petit", "petit", "0");
+    activarClick("petit2", "petit", "1");
 
-    const petit1 = document.getElementById("petit");
-    const petit2 = document.getElementById("petit2");
-
-    if (petit1) {
-        petit1.addEventListener("click", function () {
-            goToGame("petit", "0");
-        });
-    }
-
-    if (petit2) {
-        petit2.addEventListener("click", function () {
-            goToGame("petit", "1");
-        });
-    }
-
-
-    // =====================
     // MITJA
-    // =====================
+    activarClick("mitja", "mitja", "0");
+    activarClick("mitja2", "mitja", "1");
 
-    const mitja1 = document.getElementById("mitja");
-    const mitja2 = document.getElementById("mitja2");
-
-    if (mitja1) {
-        mitja1.addEventListener("click", function () {
-            goToGame("mitja", "0");
-        });
-    }
-
-    if (mitja2) {
-        mitja2.addEventListener("click", function () {
-            goToGame("mitja", "1");
-        });
-    }
-
-
-    // =====================
     // GRAN
-    // =====================
-
-    const gran1 = document.getElementById("gran");
-    const gran2 = document.getElementById("gran2");
-
-    if (gran1) {
-        gran1.addEventListener("click", function () {
-            goToGame("gran", "0");
-        });
-    }
-
-    if (gran2) {
-        gran2.addEventListener("click", function () {
-            goToGame("gran", "1");
-        });
-    }
+    activarClick("gran", "gran", "0");
+    activarClick("gran2", "gran", "1");
 
 });

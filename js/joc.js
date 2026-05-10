@@ -2,20 +2,32 @@
 // 1. VARIABLES GLOBALES
 // ==========================
 
+// Recuperamos la configuración guardada
 const size = localStorage.getItem("size");
 const boardIndex = localStorage.getItem("board");
 
+// Tablero actual
 let board;
+
+// Matriz que indica qué casillas son fijas
 let fixed = [];
+
+// Celdas que contienen errores
 let errorCells = [];
+
+// Mensaje de error actual
 let errorMessage = "";
+
+// Elemento HTML donde se muestra el error
 let errorBox = null;
+
 
 
 // ==========================
 // 2. CARGAR TABLERO
 // ==========================
 
+// Seleccionamos el tablero según tamaño y número
 if (size === "petit") {
     board = (boardIndex === "0") ? PETIT_1 : PETIT_2;
 } else if (size === "mitja") {
@@ -24,40 +36,45 @@ if (size === "petit") {
     board = (boardIndex === "0") ? GRAN_1 : GRAN_2;
 }
 
-// copia segura
+// Hacemos una copia profunda para no modificar el original
 board = JSON.parse(JSON.stringify(board));
 
 
-// ==========================
-// 3. CASILLAS FIJAS
-// ==========================
 
-fixed = [];
+// ==========================
+// 3. MARCAR CASILLAS FIJAS
+// ==========================
 
 for (let i = 0; i < board.length; i++) {
     fixed[i] = [];
+
     for (let j = 0; j < board[i].length; j++) {
+        // Una casilla es fija si NO está vacía
         fixed[i][j] = board[i][j] !== "";
     }
 }
 
 
+
 // ==========================
-// 4. TABLERO LLENO
+// 4. COMPROBAR SI EL TABLERO ESTÁ LLENO
 // ==========================
 
 function isBoardFull() {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
-            if (board[i][j] === "") return false;
+            if (board[i][j] === "") {
+                return false;
+            }
         }
     }
     return true;
 }
 
 
+
 // ==========================
-// 5. CHECK WIN
+// 5. VALIDAR TABLERO (REGLAS TAKUZU)
 // ==========================
 
 function checkWin() {
@@ -68,7 +85,7 @@ function checkWin() {
     const n = board.length;
     const half = n / 2;
 
-    // 1. incompleto
+    // 1. Comprobar si hay casillas vacías
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
             if (board[i][j] === "") {
@@ -78,20 +95,19 @@ function checkWin() {
         }
     }
 
-    // ==========================
-    // 2. números seguidos en fila
-    // ==========================
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < n - 2; j++) {
+    // 2. Tres números iguales seguidos en una FILA
+    for (let fila = 0; fila < n; fila++) {
+        for (let col = 0; col < n - 2; col++) {
 
-            if (
-                board[i][j] === board[i][j + 1] &&
-                board[i][j] === board[i][j + 2]
-            ) {
+            const a = board[fila][col];
+            const b = board[fila][col + 1];
+            const c = board[fila][col + 2];
+
+            if (a === b && a === c) {
                 errorMessage = "❌ Hay números seguidos en una fila";
 
                 for (let x = 0; x < n; x++) {
-                    errorCells.push([i, x]);
+                    errorCells.push([fila, x]);
                 }
 
                 return false;
@@ -99,20 +115,19 @@ function checkWin() {
         }
     }
 
-    // ==========================
-    // 3. números seguidos en columna
-    // ==========================
-    for (let j = 0; j < n; j++) {
-        for (let i = 0; i < n - 2; i++) {
+    // 3. Tres números iguales seguidos en una COLUMNA
+    for (let col = 0; col < n; col++) {
+        for (let fila = 0; fila < n - 2; fila++) {
 
-            if (
-                board[i][j] === board[i + 1][j] &&
-                board[i][j] === board[i + 2][j]
-            ) {
+            const a = board[fila][col];
+            const b = board[fila + 1][col];
+            const c = board[fila + 2][col];
+
+            if (a === b && a === c) {
                 errorMessage = "❌ Hay números seguidos en una columna";
 
                 for (let x = 0; x < n; x++) {
-                    errorCells.push([x, j]);
+                    errorCells.push([x, col]);
                 }
 
                 return false;
@@ -120,48 +135,44 @@ function checkWin() {
         }
     }
 
-    // ==========================
-    // 4. balance filas
-    // ==========================
-    for (let i = 0; i < n; i++) {
+    // 4. Balance correcto en FILAS
+    for (let fila = 0; fila < n; fila++) {
 
         let zeros = 0;
         let ones = 0;
 
-        for (let j = 0; j < n; j++) {
-            if (board[i][j] === "0") zeros++;
-            if (board[i][j] === "1") ones++;
+        for (let col = 0; col < n; col++) {
+            if (board[fila][col] === "0") zeros++;
+            if (board[fila][col] === "1") ones++;
         }
 
         if (zeros !== half || ones !== half) {
-            errorMessage = "❌ fila mal balanceada";
+            errorMessage = "❌ Fila mal balanceada";
 
             for (let x = 0; x < n; x++) {
-                errorCells.push([i, x]);
+                errorCells.push([fila, x]);
             }
 
             return false;
         }
     }
 
-    // ==========================
-    // 5. balance columnas
-    // ==========================
-    for (let j = 0; j < n; j++) {
+    // 5. Balance correcto en COLUMNAS
+    for (let col = 0; col < n; col++) {
 
         let zeros = 0;
         let ones = 0;
 
-        for (let i = 0; i < n; i++) {
-            if (board[i][j] === "0") zeros++;
-            if (board[i][j] === "1") ones++;
+        for (let fila = 0; fila < n; fila++) {
+            if (board[fila][col] === "0") zeros++;
+            if (board[fila][col] === "1") ones++;
         }
 
         if (zeros !== half || ones !== half) {
-            errorMessage = "❌ columna mal balanceada";
+            errorMessage = "❌ Columna mal balanceada";
 
             for (let x = 0; x < n; x++) {
-                errorCells.push([x, j]);
+                errorCells.push([x, col]);
             }
 
             return false;
@@ -172,20 +183,23 @@ function checkWin() {
 }
 
 
+
 // ==========================
-// 6. CLICK
+// 6. CLICK EN UNA CASILLA
 // ==========================
 
-function handleClick(e) {
+function handleClick(event) {
 
-    const i = Number(e.target.dataset.row);
-    const j = Number(e.target.dataset.col);
+    const fila = Number(event.target.dataset.row);
+    const col = Number(event.target.dataset.col);
 
-    if (fixed[i][j]) return;
+    // No permitir modificar casillas fijas
+    if (fixed[fila][col]) return;
 
-    if (board[i][j] === "") board[i][j] = "0";
-    else if (board[i][j] === "0") board[i][j] = "1";
-    else board[i][j] = "";
+    // Rotación: vacío → 0 → 1 → vacío
+    if (board[fila][col] === "") board[fila][col] = "0";
+    else if (board[fila][col] === "0") board[fila][col] = "1";
+    else board[fila][col] = "";
 
     renderBoard();
 
@@ -196,14 +210,15 @@ function handleClick(e) {
     }
 
     if (isBoardFull() && valid) {
-        alert("🎉 ¡HAS GANADO!");
+        alert("🎉 ¡HAS GUANYAT!");
         window.location.href = "../html/benvinguda.html";
     }
 }
 
 
+
 // ==========================
-// 7. RENDER
+// 7. DIBUJAR TABLERO
 // ==========================
 
 function renderBoard() {
@@ -212,40 +227,38 @@ function renderBoard() {
     container.innerHTML = "";
 
     container.style.display = "grid";
-    container.style.gridTemplateColumns =
-        `repeat(${board[0].length}, 44px)`;
-
+    container.style.gridTemplateColumns = `repeat(${board[0].length}, 44px)`;
     container.style.gap = "0";
 
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
+    for (let fila = 0; fila < board.length; fila++) {
+        for (let col = 0; col < board[fila].length; col++) {
 
-            const div = document.createElement("div");
-            div.classList.add("cell");
+            const celda = document.createElement("div");
+            celda.classList.add("cell");
 
-            div.textContent = board[i][j] || "";
+            celda.textContent = board[fila][col] || "";
 
-            div.dataset.row = i;
-            div.dataset.col = j;
+            celda.dataset.row = fila;
+            celda.dataset.col = col;
 
-            if (fixed[i][j]) {
-                div.classList.add("fixed");
+            if (fixed[fila][col]) {
+                celda.classList.add("fixed");
             }
 
+            // Marcar errores
             for (let k = 0; k < errorCells.length; k++) {
-
                 const [r, c] = errorCells[k];
-
-                if (r === i && c === j) {
-                    div.classList.add("error");
+                if (r === fila && c === col) {
+                    celda.classList.add("error");
                 }
             }
 
-            div.addEventListener("click", handleClick);
-            container.appendChild(div);
+            celda.addEventListener("click", handleClick);
+            container.appendChild(celda);
         }
     }
 }
+
 
 
 // ==========================

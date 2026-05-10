@@ -1,5 +1,5 @@
 /* ============================
-   TAKUZU - Estilo Cyberpunk
+   LETRA DE GOOGLE
    ============================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap');
@@ -16,7 +16,6 @@ body {
     font-size: 18px;
     margin: 0;
     padding: 30px;
-    min-height: 100vh;
 }
 
 
@@ -55,7 +54,7 @@ h2 {
 
 
 /* ============================
-   NAVEGACIÓN
+   NAVEGACION
    ============================ */
 
 ul.navegador {
@@ -78,7 +77,6 @@ ul.navegador li a {
     border: 2px solid #ff2d78;
     text-transform: uppercase;
     letter-spacing: 2px;
-    transition: background-color 0.2s, color 0.2s;
 }
 
 ul.navegador li a:hover {
@@ -200,7 +198,6 @@ section ul li::before {
 .preview {
     border: 2px solid #1e1e3a;
     cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .preview:hover {
